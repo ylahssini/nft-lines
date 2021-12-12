@@ -1,6 +1,5 @@
 import random
 import base64
-import json
 from html2image import Html2Image
 
 print(' - - - - - - - - N F T   G R I D   L I N E S   G E N E R A T O R - - - - - - - -')
@@ -24,13 +23,13 @@ hti = Html2Image(
 
 cells = str('')
 
-for v in range(3):
+for v in range(20):
     print('Start create a variantion N%s' % v)
 
-    row = []
+    top = size
 
     for y in range(grid):
-        col = []
+        code = ''
 
         if y != 0:
             top = size * (y + 1)
@@ -50,32 +49,32 @@ for v in range(3):
 
             image = 'data:image/png;base64,%s' % (image_64.decode('utf-8'))
 
-            col.append('{}{}'.format(color, variant))
+            code += '{}{}'.format(color, variant)
 
             cells += '<div class="cell" style="left: %spx; top: %spx;"><img src="data:%s" alt="" /></div>' % (left, top, image)
 
         left = size
-        row.append(col)
     else:
         html = "<body>%s</body>" % (cells)
+        cells = ''
 
-        grid = random.randint(1, 4)
+        grid_index = random.randint(1, 4)
 
         bg_64 = str('')
-        with open('images/grid/grid%s.png' % (grid), 'rb') as image_file:
+        with open('images/grid/grid%s.png' % (grid_index), 'rb') as image_file:
             bg_64 = base64.b64encode(image_file.read())
 
-        name = 'v-%s%s' % (grid, v)
+        image_name = 'v-%s%s' % (grid_index, v)
 
-        variation = open('dist/%s.json' % (name), 'w')
-        variation.write(json.dumps({ 'd': row }, sort_keys=True, indent=4))
+        variation = open('dist/%s.txt' % (image_name), 'w')
+        variation.write(code)
         variation.close()
 
         hti.screenshot(
             html_str=html,
             css_str='body{width:3000px;height:3000px;position:relative;background:url("data:image/png;base64,%s") no-repeat;padding:0;margin:0}.cell{position:absolute;z-index:2;top:120px;left:120px;width:120px;height:120px}' % (bg_64.decode('utf-8')),
             size=(3000, 3000),
-            save_as='%s.png' % (name),
+            save_as='%s.png' % (image_name),
         )
 
         print('End create a variantion N%s' % v)
